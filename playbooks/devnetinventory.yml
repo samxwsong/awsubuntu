@@ -1,0 +1,15 @@
+---
+
+routers: 
+  hosts: 
+    latestios:
+      ansible_host: ios-xe-mgmt-latest.cisco.com
+      ansible_network_os: ios
+      ansible_user: developer
+      ansible_port: 8181
+       
+    ios:
+      ansible_host: ios-xe-mgmt.cisco.com
+      ansible_network_os: ios
+      ansible_user: developer
+      ansible_port: 8181
