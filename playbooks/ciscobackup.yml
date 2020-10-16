@@ -1,0 +1,32 @@
+---
+- hosts: routers
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  
+  tasks:
+    - name: Gather facts (ios)
+      cisco.ios.ios_facts:
+      when: ansible_network_os == 'cisco.ios.ios'
+      
+    - name: Display some facts
+      debug:
+        msg: "The hostname is {{ ansible_net_hostname }} and the OS is {{ ansible_net_version }}"
+        
+     - name: Facts from a specific host
+      debug:
+        var: hostvars['ios-xe-mgmt-latest.cisco.com']
+  
+      - name: Write facts to disk using a template
+      copy:
+        content: |
+            IOS device info:
+            {% for host in groups['ios'] %}
+            Hostname: {{ hostvars[host].ansible_net_hostname }}
+            Version: {{ hostvars[host].ansible_net_version }}
+            Model: {{ hostvars[host].ansible_net_model }}
+            Serial: {{ hostvars[host].ansible_net_serialnum }}
+            {% endfor %}
+        dest: /tmp/router-facts
+      run_once: yes
+      
+   
