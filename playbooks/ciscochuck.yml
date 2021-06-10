@@ -2,7 +2,7 @@
 
 - name: General Config
 
-  hosts: routers
+  hosts: latest
 
   tasks:
 

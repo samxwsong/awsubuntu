@@ -1,7 +1,7 @@
 ---
 
 - name: "Demonstrate connecting to routers"
-  hosts: routers
+  hosts: latest
   gather_facts: no
   tasks:
 
