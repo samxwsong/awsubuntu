@@ -11,5 +11,3 @@
     - name: Display some facts
       debug:
         msg: "The hostname is {{ ansible_net_hostname }} and the OS is {{ ansible_net_version }}"
-        
-

@@ -1,0 +1,75 @@
+---
+
+- name: "Demonstrate connecting to routers"
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+  ###
+  # Collect data
+  #
+  - name: Gather facts (ios)
+    cisco.ios.ios_facts:
+    when: ansible_network_os == 'cisco.ios.ios'
+
+  - name: Display some facts
+    debug:
+      msg: "The hostname is {{ ansible_net_hostname }} and the OS is {{ ansible_net_version }}"
+
+  - name: Facts from a specific host
+    debug:
+      var: hostvars['ios-xe-mgmt-latest.cisco.com']
+
+  - name: Write facts to disk using a template
+    copy:
+      content: |
+        #jinja2: lstrip_blocks: True
+        ios device info:
+          {% for host in groups['ios'] %}
+          Hostname: {{ hostvars[host].ansible_net_hostname }}
+          Version: {{ hostvars[host].ansible_net_version }}
+          Model: {{ hostvars[host].ansible_net_model }}
+          Serial: {{ hostvars[host].ansible_net_serialnum }}
+          {% endfor %}
+
+        Latest device info:
+          {% for host in groups['latest'] %}
+          Hostname: {{ hostvars[host].ansible_net_hostname }}
+          Version: {{ hostvars[host].ansible_net_version }}
+          Model: {{ hostvars[host].ansible_net_model }}
+          Serial: {{ hostvars[host].ansible_net_serialnum }}
+          {% endfor %}
+
+        Normal device info:
+          {% for host in groups['normal'] %}
+          Hostname: {{ hostvars[host].ansible_net_hostname }}
+          Version: {{ hostvars[host].ansible_net_version }}
+          Model: {{ hostvars[host].ansible_net_model }}
+          Serial: {{ hostvars[host].ansible_net_serialnum }}
+          {% endfor %}
+      dest: /tmp/router-facts
+    run_once: yes
+
+  ###
+  # Get running configuration
+  #
+
+  - name: Backup router (ios)
+    cisco.ios.ios_config:
+      backup: yes
+    register: backup_ios_location
+    when: ansible_network_os == 'cisco.ios.ios'
+
+  - name: Create backup dir
+    file:
+      path: "/tmp/backups/{{ inventory_hostname }}"
+      state: directory
+      recurse: yes
+
+  - name: Copy backup files into /tmp/backups/ (ios)
+    copy:
+      src: "{{ backup_ios_location.backup_path }}"
+      dest: "/tmp/backups/{{ inventory_hostname }}/{{ inventory_hostname }}.bck"
+    when: ansible_network_os == 'cisco.ios.ios'
+
+

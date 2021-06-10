@@ -1,0 +1,15 @@
+---
+
+- name: "Demonstrate connecting to routers"
+  hosts: routers
+  gather_facts: no
+  tasks:
+
+  - name: Gather facts ios
+    cisco.ios.ios_facts:
+    when: ansible_network_os == 'cisco.ios.ios'
+
+  - name: Display some facts
+    debug:
+      msg: "The hostname is {{ ansible_net_hostname }} and the OS is {{ ansible_net_version }}"
+
