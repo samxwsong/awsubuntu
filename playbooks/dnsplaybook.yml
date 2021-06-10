@@ -1,6 +1,6 @@
 --- 
 - name: configure cisco routers change test
-  hosts: routers 
+  hosts: latest
   connection: ansible.netcommon.network_cli 
   gather_facts: no 
   vars: 
